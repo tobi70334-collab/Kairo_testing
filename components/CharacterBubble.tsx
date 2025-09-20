@@ -1,19 +1,32 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { CharacterId, CHAR } from '../lib/characters';
 
 interface CharacterBubbleProps {
   actorId: CharacterId;
   name?: string;
   children: ReactNode;
+  isTyping?: boolean;
+  delay?: number;
 }
 
-export default function CharacterBubble({ actorId, name, children }: CharacterBubbleProps) {
+export default function CharacterBubble({ actorId, name, children, isTyping = false, delay = 0 }: CharacterBubbleProps) {
   const character = CHAR[actorId];
   const displayName = name || character.name;
   const isLeftAligned = actorId !== 'impostor';
   const isSystem = actorId === 'system';
+  const [isVisible, setIsVisible] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    const timer1 = setTimeout(() => setIsVisible(true), delay);
+    const timer2 = setTimeout(() => setShowContent(true), delay + 300);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [delay]);
 
   const getThemeClasses = () => {
     switch (character.theme) {
@@ -42,13 +55,25 @@ export default function CharacterBubble({ actorId, name, children }: CharacterBu
 
   if (isSystem) {
     return (
-      <div className="flex justify-center my-4">
+      <div className={`flex justify-center my-4 transition-all duration-500 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}>
         <div className="max-w-2xl">
           <div className="text-center mb-2">
             <span className="text-sm font-medium text-slate-600">{displayName}</span>
           </div>
-          <div className={`px-4 py-3 rounded-2xl border-2 ${getThemeClasses()} text-center`}>
-            {children}
+          <div className={`px-4 py-3 rounded-2xl border-2 ${getThemeClasses()} text-center transition-all duration-300 ${
+            showContent ? 'scale-100' : 'scale-95'
+          }`}>
+            {isTyping ? (
+              <div className="flex items-center justify-center space-x-1">
+                <div className="animate-pulse">●</div>
+                <div className="animate-pulse" style={{ animationDelay: '0.2s' }}>●</div>
+                <div className="animate-pulse" style={{ animationDelay: '0.4s' }}>●</div>
+              </div>
+            ) : (
+              children
+            )}
           </div>
         </div>
       </div>
@@ -56,25 +81,43 @@ export default function CharacterBubble({ actorId, name, children }: CharacterBu
   }
 
   return (
-    <div className={`flex my-4 ${isLeftAligned ? 'justify-start' : 'justify-end'}`}>
+    <div className={`flex my-4 transition-all duration-500 ${
+      isLeftAligned ? 'justify-start' : 'justify-end'
+    } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
       <div className={`flex items-start space-x-3 max-w-2xl ${isLeftAligned ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
         <div className="flex-shrink-0">
           {character.avatar ? (
             <img 
               src={character.avatar} 
               alt={displayName}
-              className="w-12 h-12 rounded-full"
+              className={`w-12 h-12 rounded-full transition-all duration-300 ${
+                showContent ? 'scale-100' : 'scale-90'
+              }`}
             />
           ) : (
-            getAvatarFallback()
+            <div className={`transition-all duration-300 ${showContent ? 'scale-100' : 'scale-90'}`}>
+              {getAvatarFallback()}
+            </div>
           )}
         </div>
         <div className="flex flex-col">
-          <div className={`text-sm font-medium text-slate-600 mb-1 ${isLeftAligned ? 'text-left' : 'text-right'}`}>
+          <div className={`text-sm font-medium text-slate-600 mb-1 transition-all duration-300 ${
+            isLeftAligned ? 'text-left' : 'text-right'
+          } ${showContent ? 'opacity-100' : 'opacity-0'}`}>
             {displayName}
           </div>
-          <div className={`px-4 py-3 rounded-2xl border-2 ${getThemeClasses()} ${isLeftAligned ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}>
-            {children}
+          <div className={`px-4 py-3 rounded-2xl border-2 ${getThemeClasses()} ${
+            isLeftAligned ? 'rounded-tl-sm' : 'rounded-tr-sm'
+          } transition-all duration-300 ${showContent ? 'scale-100' : 'scale-95'}`}>
+            {isTyping ? (
+              <div className="flex items-center space-x-1">
+                <div className="animate-pulse">●</div>
+                <div className="animate-pulse" style={{ animationDelay: '0.2s' }}>●</div>
+                <div className="animate-pulse" style={{ animationDelay: '0.4s' }}>●</div>
+              </div>
+            ) : (
+              children
+            )}
           </div>
         </div>
       </div>

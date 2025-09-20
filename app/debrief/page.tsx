@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BadgeModal from '../../components/BadgeModal';
+import ProgressRing from '../../components/ProgressRing';
+import BiasIndicator from '../../components/BiasIndicator';
 import { tierFromXP } from '../../lib/engine-v2';
 import { CharacterId, CHAR } from '../../lib/characters';
+import { AchievementManager } from '../../lib/achievements';
 
 interface GameResult {
   xp: number;
@@ -25,6 +28,8 @@ export default function DebriefPage() {
   const [persona, setPersona] = useState<CharacterId | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [badge, setBadge] = useState<{ tier: string; xp: number } | null>(null);
+  const [achievementManager] = useState(() => new AchievementManager());
+  const [unlockedAchievements, setUnlockedAchievements] = useState<any[]>([]);
 
   useEffect(() => {
     const resultData = localStorage.getItem('kairo.result');
@@ -50,6 +55,9 @@ export default function DebriefPage() {
       setBadge(earnedBadge);
       setShowBadgeModal(true);
     }
+
+    // Load achievements
+    setUnlockedAchievements(achievementManager.getUnlockedAchievements());
   }, []);
 
   const getBiasTips = () => {
@@ -180,6 +188,69 @@ export default function DebriefPage() {
             </div>
           </div>
         )}
+
+        {/* Analytics Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Performance Overview */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Performance</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Total XP</span>
+                <span className="text-2xl font-bold text-emerald-600">{result.xp}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Decisions Made</span>
+                <span className="text-xl font-semibold text-slate-800">{result.events.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Success Rate</span>
+                <span className="text-xl font-semibold text-slate-800">
+                  {Math.round((result.events.filter(e => e.severity === 'good').length / result.events.length) * 100)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bias Analysis */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Bias Analysis</h3>
+            <div className="space-y-3">
+              {Object.entries(result.bias).length > 0 ? (
+                Object.entries(result.bias).map(([biasType, count]) => (
+                  <BiasIndicator
+                    key={biasType}
+                    biasType={biasType}
+                    count={count}
+                    isActive={count > 0}
+                  />
+                ))
+              ) : (
+                <p className="text-slate-500 text-sm">No biases detected</p>
+              )}
+            </div>
+          </div>
+
+          {/* Achievements */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Achievements</h3>
+            <div className="space-y-2">
+              {unlockedAchievements.length > 0 ? (
+                unlockedAchievements.slice(0, 3).map((achievement) => (
+                  <div key={achievement.id} className="flex items-center space-x-2">
+                    <span className="text-lg">{achievement.icon}</span>
+                    <span className="text-sm text-slate-700">{achievement.name}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-500 text-sm">No achievements yet</p>
+              )}
+              {unlockedAchievements.length > 3 && (
+                <p className="text-xs text-slate-500">+{unlockedAchievements.length - 3} more</p>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* Event Timeline */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">

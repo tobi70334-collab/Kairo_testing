@@ -26,6 +26,24 @@ export default function VisualFeedback({ type, message, duration = 2000, onCompl
     return () => clearTimeout(timer);
   }, [duration, onComplete]);
 
+  // Add custom shake animation - moved to useEffect to avoid SSR issues
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   if (!isVisible) return null;
 
   const getTypeStyles = () => {
@@ -73,16 +91,3 @@ export default function VisualFeedback({ type, message, duration = 2000, onCompl
   );
 }
 
-// Custom shake animation
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-  }
-  .animate-shake {
-    animation: shake 0.5s ease-in-out;
-  }
-`;
-document.head.appendChild(style);

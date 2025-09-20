@@ -4,8 +4,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import CharacterBubble from '../../components/CharacterBubble';
 import SceneHeader from '../../components/SceneHeader';
+import AnimatedChoice from '../../components/AnimatedChoice';
+import VisualFeedback from '../../components/VisualFeedback';
+import ProgressRing from '../../components/ProgressRing';
+import BiasIndicator from '../../components/BiasIndicator';
 import { applyChoiceV2, tickTimer, GameState, EventItem } from '../../lib/engine-v2';
 import { CharacterId, CHAR } from '../../lib/characters';
+import { AudioManager, playSuccessSound, playErrorSound, playWarningSound, playClickSound, playTimerSound, playBadgeSound } from '../../lib/audio';
+import { AchievementManager } from '../../lib/achievements';
 
 interface Scenario {
   title: string;
@@ -42,6 +48,10 @@ export default function PlayPage() {
   const [feedback, setFeedback] = useState<{ text: string; severity: 'good'|'caution'|'bad' } | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [achievementManager] = useState(() => new AchievementManager());
+  const [newAchievements, setNewAchievements] = useState<any[]>([]);
+  const [showAchievement, setShowAchievement] = useState(false);
+  const [audioManager] = useState(() => AudioManager.getInstance());
 
   // Load scenario and restore state
   useEffect(() => {
@@ -97,7 +107,10 @@ export default function PlayPage() {
     }
 
     loadScenario();
-  }, [router]);
+    
+    // Initialize audio
+    audioManager.initializeSounds();
+  }, [router, audioManager]);
 
   // Update current node when scenario or game state changes
   useEffect(() => {
@@ -142,12 +155,40 @@ export default function PlayPage() {
   const handleChoice = useCallback((choice: any) => {
     if (!gameState || !scenario) return;
 
+    // Play sound effect
+    playClickSound();
+    
     const newState = applyChoiceV2(gameState, choice.effects, choice.id);
+    
+    // Play feedback sound
+    if (choice.effects.severity === 'good') {
+      playSuccessSound();
+    } else if (choice.effects.severity === 'bad') {
+      playErrorSound();
+    } else {
+      playWarningSound();
+    }
     
     // Move to next node
     const nextNode = scenario.nodes.find(n => n.id === choice.next);
     if (nextNode) {
       if (nextNode.kind === 'end') {
+        // Check achievements
+        const gameStats = {
+          totalXP: newState.xp,
+          scenariosCompleted: 1,
+          currentStreak: newState.streak,
+          biasAvoided: Object.values(newState.bias).reduce((sum, count) => sum + count, 0),
+          perfectScores: newState.xp >= 40 ? 1 : 0
+        };
+        
+        const unlockedAchievements = achievementManager.checkAchievements(gameStats);
+        if (unlockedAchievements.length > 0) {
+          setNewAchievements(unlockedAchievements);
+          setShowAchievement(true);
+          playBadgeSound();
+        }
+        
         // Game over - save result and go to debrief
         const result = {
           xp: newState.xp,
@@ -183,7 +224,7 @@ export default function PlayPage() {
 
     // Clear feedback after 1.2s
     setTimeout(() => setFeedback(null), 1200);
-  }, [gameState, scenario, router]);
+  }, [gameState, scenario, router, achievementManager]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -267,38 +308,90 @@ export default function PlayPage() {
         )}
 
         {/* Character bubble */}
-        <CharacterBubble actorId={currentNode.actor}>
+        <CharacterBubble actorId={currentNode.actor} delay={200}>
           <p className="whitespace-pre-wrap">{currentNode.text}</p>
         </CharacterBubble>
+
+        {/* Bias indicators */}
+        {gameState && Object.keys(gameState.bias).length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {Object.entries(gameState.bias).map(([biasType, count]) => (
+              <BiasIndicator
+                key={biasType}
+                biasType={biasType}
+                count={count}
+                isActive={count > 0}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Choices */}
         {currentNode.choices && (
           <div className="mt-6 space-y-3">
             {currentNode.choices.map((choice: any, index: number) => (
-              <button
+              <AnimatedChoice
                 key={choice.id}
+                index={index}
                 onClick={() => handleChoice(choice)}
-                className="w-full h-12 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-700 font-medium rounded-xl transition-colors text-left px-4"
-                aria-label={choice.label}
+                disabled={false}
               >
-                <span className="text-slate-500 mr-2">{index + 1}.</span>
                 {choice.label}
-              </button>
+              </AnimatedChoice>
             ))}
           </div>
         )}
 
-        {/* Feedback */}
+        {/* Visual Feedback */}
         {feedback && (
-          <div className={`mt-4 p-3 rounded-lg text-center font-medium ${
-            feedback.severity === 'good' ? 'bg-emerald-100 text-emerald-800' :
-            feedback.severity === 'caution' ? 'bg-amber-100 text-amber-800' :
-            'bg-rose-100 text-rose-800'
-          }`}>
-            {feedback.text}
-          </div>
+          <VisualFeedback
+            type={feedback.severity === 'good' ? 'success' : feedback.severity === 'bad' ? 'error' : 'warning'}
+            message={feedback.text}
+            duration={2000}
+            onComplete={() => setFeedback(null)}
+          />
         )}
       </div>
+
+      {/* Achievement Modal */}
+      {showAchievement && newAchievements.length > 0 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <div className="text-6xl mb-4">🏆</div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              Achievement Unlocked!
+            </h2>
+            {newAchievements.map((achievement, index) => (
+              <div key={achievement.id} className="mb-4">
+                <div className="text-4xl mb-2">{achievement.icon}</div>
+                <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                  {achievement.name}
+                </h3>
+                <p className="text-slate-600 mb-2">
+                  {achievement.description}
+                </p>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  achievement.rarity === 'common' ? 'bg-slate-100 text-slate-800' :
+                  achievement.rarity === 'rare' ? 'bg-blue-100 text-blue-800' :
+                  achievement.rarity === 'epic' ? 'bg-purple-100 text-purple-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {achievement.rarity.toUpperCase()}
+                </span>
+              </div>
+            ))}
+            <button
+              onClick={() => {
+                setShowAchievement(false);
+                setNewAchievements([]);
+              }}
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl transition-colors"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
