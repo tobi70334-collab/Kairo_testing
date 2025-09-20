@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Play Page</title>
+</head>
+<body>
+    <h1>Debug Play Page</h1>
+    <div id="debug"></div>
+    
+    <script>
+        // Simulate the scenario loading and choice handling
+        async function testScenario() {
+            try {
+                const response = await fetch('/scenarios/escalating-bec.json');
+                const scenario = await response.json();
+                
+                console.log('Scenario loaded:', scenario);
+                document.getElementById('debug').innerHTML += '<p>Scenario loaded successfully</p>';
+                
+                // Test intro node
+                const introNode = scenario.nodes.find(n => n.id === 'intro');
+                console.log('Intro node:', introNode);
+                document.getElementById('debug').innerHTML += '<p>Intro node found: ' + (introNode ? 'YES' : 'NO') + '</p>';
+                
+                if (introNode && introNode.choices) {
+                    document.getElementById('debug').innerHTML += '<p>Intro node has ' + introNode.choices.length + ' choices</p>';
+                    
+                    // Test first choice
+                    const firstChoice = introNode.choices[0];
+                    console.log('First choice:', firstChoice);
+                    document.getElementById('debug').innerHTML += '<p>First choice: "' + firstChoice.label + '" -> "' + firstChoice.next + '"</p>';
+                    
+                    // Test if next node exists
+                    const nextNode = scenario.nodes.find(n => n.id === firstChoice.next);
+                    console.log('Next node:', nextNode);
+                    document.getElementById('debug').innerHTML += '<p>Next node exists: ' + (nextNode ? 'YES' : 'NO') + '</p>';
+                    
+                    if (nextNode) {
+                        document.getElementById('debug').innerHTML += '<p>Next node has ' + (nextNode.choices ? nextNode.choices.length : 0) + ' choices</p>';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('debug').innerHTML += '<p>Error: ' + error.message + '</p>';
+            }
+        }
+        
+        testScenario();
+    </script>
+</body>
+</html>

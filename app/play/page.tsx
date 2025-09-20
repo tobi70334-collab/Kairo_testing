@@ -238,11 +238,13 @@ export default function PlayPage() {
         // Update game state with new node ID
         const updatedState = { ...newState, nodeId: choice.next };
         console.log('Updated state:', updatedState);
+        
+        // Update state and node immediately
         setGameState(updatedState);
+        setCurrentNode(nextNode);
         localStorage.setItem('kairo.state', JSON.stringify(updatedState));
         
-        // Update current node and timer
-        setCurrentNode(nextNode);
+        // Update timer
         if (nextNode.timerSec) {
           setTimeLeft(nextNode.timerSec);
           setStartTime(Date.now());
