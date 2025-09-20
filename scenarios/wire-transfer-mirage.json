@@ -1,0 +1,115 @@
+{
+  "title": "Wire Transfer Mirage",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 10 },
+    { "tier": "Silver", "xp": 25 },
+    { "tier": "Gold", "xp": 40 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "Urgent vendor payment requested: 14,900 EUR. The sender claims to be the CEO.",
+      "timerSec": 30,
+      "evidence": [
+        { "id": "hdr", "label": "Email headers", "text": "Reply-To: ceo@compaany.com; SPF: softfail" },
+        { "id": "policy", "label": "Payment policy", "text": "Dual approval above 10,000 EUR. Voice verify changes." }
+      ],
+      "choices": [
+        { "id": "c1", "label": "Inspect domain and headers", "next": "headers", "effects": { "xp": 10, "bias": ["debias_overconfidence"], "feedback": "You checked the signal, not the story.", "severity": "good" } },
+        { "id": "c2", "label": "Ask a finance peer for a quick glance", "next": "policy", "effects": { "xp": 6, "bias": ["debias_authority_bias"], "feedback": "Peer review lowers single-point failure.", "severity": "good" } },
+        { "id": "c3", "label": "Proceed to pay to avoid late fees", "next": "escalate", "effects": { "xp": -5, "bias": ["present_bias", "overconfidence"], "feedback": "Rushing increases error rate.", "severity": "bad" } },
+        { "id": "c4", "label": "Reply and request the IBAN", "next": "bait", "effects": { "xp": -3, "bias": ["authority_bias"], "feedback": "Engaging on the attacker channel is risky.", "severity": "caution" } }
+      ]
+    },
+    {
+      "id": "headers",
+      "actor": "system",
+      "kind": "quiz",
+      "text": "Which header is the strongest red flag?",
+      "choices": [
+        { "id": "h1", "label": "Reply-To mismatch", "next": "policy", "effects": { "xp": 10, "bias": ["debias_alert_fatigue"], "feedback": "Classic spoof pattern.", "severity": "good" } },
+        { "id": "h2", "label": "Date header is recent", "next": "policy", "effects": { "xp": 0, "bias": [], "feedback": "Neutral signal.", "severity": "caution" } },
+        { "id": "h3", "label": "Subject says URGENT", "next": "policy", "effects": { "xp": 2, "bias": ["debias_status_quo"], "feedback": "Useful but weak alone.", "severity": "caution" } },
+        { "id": "h4", "label": "DKIM aligned", "next": "policy", "effects": { "xp": -2, "bias": ["optimism_bias"], "feedback": "Alignment can be forged for lookalikes.", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "policy",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Policy requires dual approval and voice verification of bank changes.",
+      "choices": [
+        { "id": "p1", "label": "Start approval workflow", "next": "verify", "effects": { "xp": 8, "bias": [], "feedback": "Process reduces risk.", "severity": "good" } },
+        { "id": "p2", "label": "Override with a screenshot from the CEO", "next": "breach", "effects": { "xp": -10, "bias": ["authority_bias"], "feedback": "Screenshots are not authorisation.", "severity": "bad" } },
+        { "id": "p3", "label": "Ping the CEO on Teams", "next": "verify", "effects": { "xp": 4, "bias": ["debias_authority_bias"], "feedback": "Use a trusted channel.", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "verify",
+      "actor": "system",
+      "kind": "decision",
+      "text": "Choose a verification path.",
+      "choices": [
+        { "id": "v1", "label": "Voice call the vendor using a known number", "next": "vendor-call", "effects": { "xp": 8, "bias": ["debias_overconfidence"], "feedback": "Out-of-band is strong.", "severity": "good" } },
+        { "id": "v2", "label": "Email the vendor by replying to the thread", "next": "bait", "effects": { "xp": -4, "bias": ["confirmation_bias"], "feedback": "You reused the attacker channel.", "severity": "bad" } },
+        { "id": "v3", "label": "Ask PM to confirm the invoice in the system", "next": "records", "effects": { "xp": 6, "bias": ["debias_status_quo"], "feedback": "System of record matters.", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "vendor-call",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Vendor denies any change request. The old IBAN is still valid.",
+      "choices": [
+        { "id": "vc1", "label": "Report suspected BEC to IT and the Finance lead", "next": "success", "effects": { "xp": 10, "bias": [], "feedback": "Escalation blocks loss.", "severity": "good" } },
+        { "id": "vc2", "label": "Proceed anyway because the CEO insists", "next": "breach", "effects": { "xp": -12, "bias": ["authority_bias", "optimism_bias"], "feedback": "Pressure recognised, not resisted.", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "records",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "ERP shows no invoice for this vendor this month.",
+      "choices": [
+        { "id": "r1", "label": "Halt payment and escalate", "next": "success", "effects": { "xp": 10, "bias": [], "feedback": "You followed evidence.", "severity": "good" } },
+        { "id": "r2", "label": "Pay anyway, reconcile later", "next": "breach", "effects": { "xp": -10, "bias": ["present_bias"], "feedback": "Deferred thinking is costly.", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "bait",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The impostor replies with a new IBAN and adds urgency.",
+      "choices": [
+        { "id": "b1", "label": "Stop replying and switch to phone verification", "next": "verify", "effects": { "xp": 6, "bias": ["debias_authority_bias"], "feedback": "Channel switch reduces risk.", "severity": "good" } },
+        { "id": "b2", "label": "Ask for the accountant's contact in the same thread", "next": "bait-2", "effects": { "xp": -2, "bias": ["confirmation_bias"], "feedback": "Still inside attacker thread.", "severity": "caution" } },
+        { "id": "b3", "label": "Click the provided portal link", "next": "malware", "effects": { "xp": -8, "bias": ["curiosity_bias"], "feedback": "Link-click risk taken.", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "bait-2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "A new 'accountant' joins the thread and confirms the change.",
+      "choices": [
+        { "id": "b21", "label": "Voice confirm via the vendor's known number", "next": "vendor-call", "effects": { "xp": 6, "bias": ["debias_authority_bias"], "feedback": "You moved out-of-band.", "severity": "good" } },
+        { "id": "b22", "label": "Trust the thread and proceed to pay", "next": "breach", "effects": { "xp": -10, "bias": ["authority_bias", "bandwagon_effect"], "feedback": "Thread consensus can be manufactured.", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "malware",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Browser warns about a risky site. Possible credential harvest.",
+      "choices": [
+        { "id": "m1", "label": "Close tab and report to IT", "next": "success", "effects": { "xp": 8, "bias": ["debias_curiosity"], "feedback": "You broke the chain.", "severity": "good" } },
+        { "id": "m2", "label": "Proceed and enter credentials", "next": "breach", "effects": { "xp": -15, "bias": ["optimism_bias"], "feedback": "High impact mistake.", "severity": "bad" } }
+      ]
+    },
+    { "id": "success", "actor": "system", "kind": "end", "text": "Good catch. You blocked a BEC attempt." },
+    { "id": "breach", "actor": "system", "kind": "end", "text": "Funds lost. Incident response triggered." }
+  ]
+}
