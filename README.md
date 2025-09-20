@@ -112,3 +112,5 @@ This project is open source and available under the [MIT License](LICENSE).
 ## Live Demo
 
 The application is deployed and available at: [https://tobi70334-collab.github.io/Kairo_testing/](https://tobi70334-collab.github.io/Kairo_testing/)
+
+**Status**: Deploying... Please wait 2-3 minutes for the site to be live.
