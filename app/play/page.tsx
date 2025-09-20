@@ -61,9 +61,35 @@ export default function PlayPage() {
     const loadScenario = async () => {
       try {
         const scenarioId = localStorage.getItem('kairo.scenario') || 'escalating-bec';
+        console.log('Loading scenario:', scenarioId);
         const response = await fetch(`/scenarios/${scenarioId}.json`);
         const data = await response.json();
+        console.log('Scenario loaded:', data);
         setScenario(data);
+        
+        // Initialize game state after scenario is loaded
+        const personaId = localStorage.getItem('kairo.persona') as CharacterId;
+        if (!personaId) {
+          router.push('/');
+          return;
+        }
+        setPersona(personaId);
+
+        const savedState = localStorage.getItem('kairo.state');
+        if (savedState) {
+          console.log('Restoring saved state:', JSON.parse(savedState));
+          setGameState(JSON.parse(savedState));
+        } else {
+          console.log('Initializing new game state');
+          setGameState({
+            nodeId: 'intro',
+            xp: 0,
+            bias: {},
+            steps: 0,
+            streak: 0,
+            events: []
+          });
+        }
       } catch (error) {
         console.error('Failed to load scenario:', error);
         // Fallback micro-scenario
@@ -85,29 +111,23 @@ export default function PlayPage() {
             { id: "end", actor: "system", kind: "end", text: "Scenario complete." }
           ]
         });
+        
+        const personaId = localStorage.getItem('kairo.persona') as CharacterId;
+        if (!personaId) {
+          router.push('/');
+          return;
+        }
+        setPersona(personaId);
+        setGameState({
+          nodeId: 'intro',
+          xp: 0,
+          bias: {},
+          steps: 0,
+          streak: 0,
+          events: []
+        });
       }
     };
-
-    const personaId = localStorage.getItem('kairo.persona') as CharacterId;
-    if (!personaId) {
-      router.push('/');
-      return;
-    }
-    setPersona(personaId);
-
-    const savedState = localStorage.getItem('kairo.state');
-    if (savedState) {
-      setGameState(JSON.parse(savedState));
-    } else {
-      setGameState({
-        nodeId: 'intro',
-        xp: 0,
-        bias: {},
-        steps: 0,
-        streak: 0,
-        events: []
-      });
-    }
 
     loadScenario();
     
