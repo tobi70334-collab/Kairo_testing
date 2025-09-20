@@ -8,6 +8,9 @@ import AnimatedChoice from '../../components/AnimatedChoice';
 import VisualFeedback from '../../components/VisualFeedback';
 import ProgressRing from '../../components/ProgressRing';
 import BiasIndicator from '../../components/BiasIndicator';
+import SecurityHeader from '../../components/SecurityHeader';
+import SecurityCard from '../../components/SecurityCard';
+import ThreatIndicator from '../../components/ThreatIndicator';
 import { applyChoiceV2, tickTimer, GameState, EventItem } from '../../lib/engine-v2';
 import { CharacterId, CHAR } from '../../lib/characters';
 import { AudioManager, playSuccessSound, playErrorSound, playWarningSound, playClickSound, playTimerSound, playBadgeSound } from '../../lib/audio';
@@ -57,7 +60,7 @@ export default function PlayPage() {
   useEffect(() => {
     const loadScenario = async () => {
       try {
-        const scenarioId = localStorage.getItem('kairo.scenario') || 'wire-transfer-mirage';
+        const scenarioId = localStorage.getItem('kairo.scenario') || 'escalating-bec';
         const response = await fetch(`/scenarios/${scenarioId}.json`);
         const data = await response.json();
         setScenario(data);

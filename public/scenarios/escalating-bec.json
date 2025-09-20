@@ -1,0 +1,333 @@
+{
+  "title": "Escalating BEC Attack Simulation",
+  "difficulty": "progressive",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 10 },
+    { "tier": "Silver", "xp": 25 },
+    { "tier": "Gold", "xp": 40 },
+    { "tier": "Platinum", "xp": 60 },
+    { "tier": "Diamond", "xp": 80 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "You receive an email from your CEO requesting an urgent wire transfer of $25,000 to a new vendor. The email appears legitimate with proper formatting and company letterhead.",
+      "evidence": [
+        { "id": "sender", "label": "Sender", "text": "sarah.johnson@company.com" },
+        { "id": "subject", "label": "Subject", "text": "URGENT: Vendor Payment Required" },
+        { "id": "amount", "label": "Amount", "text": "$25,000" },
+        { "id": "urgency", "label": "Urgency", "text": "Immediate action required" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Process the transfer immediately", 
+          "next": "escalation_1", 
+          "effects": { 
+            "xp": -5, 
+            "bias": ["authority_bias", "present_bias"], 
+            "feedback": "High risk: Processing without verification", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Verify with CEO directly", 
+          "next": "escalation_2", 
+          "effects": { 
+            "xp": 8, 
+            "bias": ["debias_authority_bias"], 
+            "feedback": "Good security practice", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Check company policy first", 
+          "next": "escalation_3", 
+          "effects": { 
+            "xp": 6, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Following proper procedures", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Forward to finance team", 
+          "next": "escalation_4", 
+          "effects": { 
+            "xp": 4, 
+            "bias": [], 
+            "feedback": "Good escalation, but verify source", 
+            "severity": "caution" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_1",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The CEO calls you directly, confirming the transfer and adding pressure about a critical deadline. She mentions confidential information about an upcoming acquisition that requires this payment to proceed.",
+      "timerSec": 45,
+      "evidence": [
+        { "id": "caller_id", "label": "Caller ID", "text": "Company main number" },
+        { "id": "voice", "label": "Voice", "text": "Sounds like the CEO" },
+        { "id": "context", "label": "Context", "text": "Mentions real company projects" },
+        { "id": "pressure", "label": "Pressure", "text": "Deadline in 2 hours" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Complete the transfer now", 
+          "next": "escalation_2", 
+          "effects": { 
+            "xp": -10, 
+            "bias": ["authority_bias", "present_bias", "bandwagon_effect"], 
+            "feedback": "Extremely high risk: Multiple verification bypassed", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Ask for written authorization", 
+          "next": "escalation_3", 
+          "effects": { 
+            "xp": 5, 
+            "bias": ["debias_authority_bias"], 
+            "feedback": "Good verification attempt", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Verify through company directory", 
+          "next": "escalation_4", 
+          "effects": { 
+            "xp": 8, 
+            "bias": ["debias_overconfidence"], 
+            "feedback": "Excellent verification method", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Consult legal team first", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 6, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Good process adherence", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The 'CEO' provides a scanned authorization document and becomes increasingly aggressive about the deadline. She threatens to involve the board if the transfer isn't completed immediately.",
+      "timerSec": 30,
+      "evidence": [
+        { "id": "document", "label": "Document", "text": "Scanned authorization form" },
+        { "id": "threats", "label": "Threats", "text": "Board involvement mentioned" },
+        { "id": "urgency", "label": "Urgency", "text": "30 minutes remaining" },
+        { "id": "pressure", "label": "Pressure", "text": "Multiple calls received" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Process transfer to avoid escalation", 
+          "next": "escalation_3", 
+          "effects": { 
+            "xp": -15, 
+            "bias": ["authority_bias", "present_bias", "optimism_bias"], 
+            "feedback": "Critical error: Falling for pressure tactics", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Insist on face-to-face meeting", 
+          "next": "escalation_4", 
+          "effects": { 
+            "xp": 10, 
+            "bias": ["debias_authority_bias"], 
+            "feedback": "Excellent security practice", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Verify document authenticity", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 8, 
+            "bias": ["debias_confirmation_bias"], 
+            "feedback": "Good verification approach", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Report to security team", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 12, 
+            "bias": [], 
+            "feedback": "Perfect security response", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_3",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker reveals they have access to internal company systems and shows you confidential information about recent board meetings. They claim this is a test of your security awareness.",
+      "timerSec": 60,
+      "evidence": [
+        { "id": "systems", "label": "System Access", "text": "Shows internal data" },
+        { "id": "board_info", "label": "Board Info", "text": "Recent meeting details" },
+        { "id": "test_claim", "label": "Test Claim", "text": "Security awareness test" },
+        { "id": "credibility", "label": "Credibility", "text": "Appears very knowledgeable" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Believe it's a legitimate test", 
+          "next": "escalation_4", 
+          "effects": { 
+            "xp": -8, 
+            "bias": ["confirmation_bias", "authority_bias"], 
+            "feedback": "Dangerous: Believing false test claims", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Verify with IT security", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 10, 
+            "bias": ["debias_confirmation_bias"], 
+            "feedback": "Excellent verification", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Check system access logs", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 8, 
+            "bias": ["debias_overconfidence"], 
+            "feedback": "Good technical verification", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "End communication immediately", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 12, 
+            "bias": [], 
+            "feedback": "Perfect security response", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_4",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker reveals they've been monitoring your communications and shows evidence of your previous conversations. They threaten to expose sensitive information if you don't comply.",
+      "timerSec": 45,
+      "evidence": [
+        { "id": "monitoring", "label": "Monitoring", "text": "Shows previous conversations" },
+        { "id": "threats", "label": "Threats", "text": "Exposure of sensitive info" },
+        { "id": "pressure", "label": "Pressure", "text": "Final 15 minutes" },
+        { "id": "fear", "label": "Fear", "text": "Personal consequences" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Comply to avoid exposure", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": -20, 
+            "bias": ["present_bias", "optimism_bias", "status_quo"], 
+            "feedback": "Critical failure: Succumbing to blackmail", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Report to authorities immediately", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 15, 
+            "bias": [], 
+            "feedback": "Outstanding security response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Contact legal and IT security", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 12, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Excellent incident response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Document everything and report", 
+          "next": "escalation_5", 
+          "effects": { 
+            "xp": 10, 
+            "bias": ["debias_optimism_bias"], 
+            "feedback": "Good documentation practice", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_5",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "This was a sophisticated multi-stage BEC attack simulation. The attacker used multiple psychological tactics including authority bias, time pressure, social engineering, and blackmail threats to test your security awareness.",
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Continue to results", 
+          "next": "end", 
+          "effects": { 
+            "xp": 5, 
+            "bias": [], 
+            "feedback": "Simulation complete", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    { 
+      "id": "end", 
+      "actor": "system", 
+      "kind": "end", 
+      "text": "Escalating BEC Attack Simulation Complete. Your responses have been analyzed for cognitive bias patterns and security awareness." 
+    }
+  ]
+}
