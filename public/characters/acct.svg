@@ -1,6 +1,33 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="32" cy="32" r="32" fill="#10b981"/>
-  <circle cx="32" cy="24" r="8" fill="white"/>
-  <path d="M16 48c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="white"/>
-  <text x="32" y="36" text-anchor="middle" fill="#064e3b" font-family="Arial, sans-serif" font-size="12" font-weight="bold">AC</text>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="40" cy="40" r="40" fill="#10b981"/>
+  
+  <!-- Professional suit silhouette -->
+  <path d="M25 35h30v35H25z" fill="#064e3b"/>
+  <path d="M30 40h20v25H30z" fill="#065f46"/>
+  
+  <!-- Head -->
+  <circle cx="40" cy="28" r="12" fill="#fbbf24"/>
+  
+  <!-- Hair -->
+  <path d="M28 20c0-6 5-10 12-10s12 4 12 10v8H28v-8z" fill="#92400e"/>
+  
+  <!-- Eyes -->
+  <circle cx="36" cy="26" r="2" fill="#1f2937"/>
+  <circle cx="44" cy="26" r="2" fill="#1f2937"/>
+  
+  <!-- Glasses -->
+  <circle cx="36" cy="26" r="4" fill="none" stroke="#374151" stroke-width="1"/>
+  <circle cx="44" cy="26" r="4" fill="none" stroke="#374151" stroke-width="1"/>
+  <line x1="40" y1="26" x2="40" y2="26" stroke="#374151" stroke-width="1"/>
+  
+  <!-- Smile -->
+  <path d="M34 32c0 2 2 4 6 4s6-2 6-4" stroke="#1f2937" stroke-width="1.5" fill="none"/>
+  
+  <!-- Tie -->
+  <path d="M38 35v8l2 2 2-2v-8" fill="#dc2626"/>
+  
+  <!-- Name badge -->
+  <rect x="35" y="45" width="10" height="6" rx="1" fill="#fbbf24"/>
+  <text x="40" y="49" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="4" font-weight="bold">AC</text>
 </svg>

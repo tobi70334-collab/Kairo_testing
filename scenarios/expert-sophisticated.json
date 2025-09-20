@@ -1,0 +1,72 @@
+{
+  "title": "Expert: Sophisticated BEC with Red Herrings",
+  "difficulty": "expert",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 20 },
+    { "tier": "Silver", "xp": 45 },
+    { "tier": "Gold", "xp": 70 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "You receive a complex email chain involving multiple parties: the CEO, CFO, external auditor, and a new vendor. The conversation appears to be about a confidential acquisition that requires immediate payment to secure the deal. The email chain spans several days and includes what appears to be legitimate business discussions.",
+      "timerSec": 90,
+      "evidence": [
+        { "id": "email_chain", "label": "Email chain analysis", "text": "5 emails over 3 days, all from legitimate-looking addresses" },
+        { "id": "context", "label": "Business context", "text": "Mentions real company projects and recent board decisions" },
+        { "id": "urgency", "label": "Pressure tactics", "text": "Deadline: 4 hours, competitor also interested, legal implications" },
+        { "id": "verification", "label": "Verification attempts", "text": "CEO and CFO both 'confirm' via separate channels" },
+        { "id": "red_flags", "label": "Subtle red flags", "text": "Slight grammar inconsistencies, unusual payment method, new vendor with no history" }
+      ],
+      "choices": [
+        { "id": "c1", "label": "Process the payment - it's been verified", "next": "processed", "effects": { "xp": -15, "bias": ["authority_bias", "bandwagon_effect", "optimism_bias"], "feedback": "Even with verification, verify the verifiers", "severity": "bad" } },
+        { "id": "c2", "label": "Insist on face-to-face meeting", "next": "insisted_meeting", "effects": { "xp": 15, "bias": ["debias_authority_bias"], "feedback": "Excellent! Physical verification is the gold standard", "severity": "good" } },
+        { "id": "c3", "label": "Analyze the email headers in detail", "next": "analyzed_headers", "effects": { "xp": 12, "bias": ["debias_overconfidence"], "feedback": "Good technical analysis", "severity": "good" } },
+        { "id": "c4", "label": "Consult legal and compliance teams", "next": "consulted_legal", "effects": { "xp": 10, "bias": ["debias_present_bias"], "feedback": "Good process, but verify the source independently", "severity": "caution" } }
+      ]
+    },
+    {
+      "id": "processed",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "You processed the payment. Later investigation reveals this was an extremely sophisticated attack. The attackers had compromised multiple email accounts and created a convincing false narrative. The 'verification' calls were also part of the attack.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "breach", "effects": { "xp": -10, "bias": [], "feedback": "Sophisticated attacks require multiple independent verifications", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "insisted_meeting",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The 'CEO' and 'CFO' both claim to be unavailable for a meeting. This raises red flags. You discover this was a sophisticated attack using compromised accounts and social engineering.",
+      "choices": [
+        { "id": "c1", "label": "Report to security immediately", "next": "success", "effects": { "xp": 12, "bias": [], "feedback": "Outstanding! You identified a sophisticated attack", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "analyzed_headers",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Detailed header analysis reveals the emails were sent from compromised accounts. The attackers had access to real business communications and used them to create convincing context.",
+      "choices": [
+        { "id": "c1", "label": "Report the compromised accounts", "next": "success", "effects": { "xp": 15, "bias": [], "feedback": "Excellent technical analysis and incident response", "severity": "good" } },
+        { "id": "c2", "label": "Process payment with extra verification", "next": "breach", "effects": { "xp": -8, "bias": ["optimism_bias"], "feedback": "Compromised accounts mean all verification is suspect", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "consulted_legal",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Legal team raises concerns about the unusual payment structure and lack of proper documentation. They recommend additional verification before proceeding.",
+      "choices": [
+        { "id": "c1", "label": "Follow legal advice and verify independently", "next": "success", "effects": { "xp": 12, "bias": [], "feedback": "Great use of internal expertise", "severity": "good" } },
+        { "id": "c2", "label": "Override legal concerns due to urgency", "next": "breach", "effects": { "xp": -10, "bias": ["present_bias"], "feedback": "Legal concerns exist for good reasons", "severity": "bad" } }
+      ]
+    },
+    { "id": "success", "actor": "system", "kind": "end", "text": "Exceptional work! You successfully identified and prevented an extremely sophisticated BEC attack. Your security awareness and verification processes are exemplary." },
+    { "id": "breach", "actor": "system", "kind": "end", "text": "This was an extremely sophisticated attack using compromised accounts and social engineering. Even experienced professionals can be targeted - always verify through multiple independent channels." }
+  ]
+}

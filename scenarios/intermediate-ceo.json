@@ -1,0 +1,69 @@
+{
+  "title": "Intermediate: CEO Impersonation",
+  "difficulty": "intermediate",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 10 },
+    { "tier": "Silver", "xp": 25 },
+    { "tier": "Gold", "xp": 40 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "Urgent: The CEO needs you to process a confidential wire transfer immediately. She's in a meeting and can't be disturbed, but this is time-sensitive.",
+      "timerSec": 45,
+      "evidence": [
+        { "id": "email", "label": "Email details", "text": "From: sarah.johnson@company.com (CEO's name matches)" },
+        { "id": "urgency", "label": "Urgency indicators", "text": "Subject: URGENT - Confidential Transfer Required" },
+        { "id": "amount", "label": "Transfer amount", "text": "€25,000 to new vendor account" }
+      ],
+      "choices": [
+        { "id": "c1", "label": "Process the transfer immediately", "next": "processed", "effects": { "xp": -8, "bias": ["authority_bias", "present_bias"], "feedback": "Never process transfers without proper verification", "severity": "bad" } },
+        { "id": "c2", "label": "Call the CEO to verify", "next": "called_ceo", "effects": { "xp": 10, "bias": ["debias_authority_bias"], "feedback": "Perfect! Always verify high-value requests", "severity": "good" } },
+        { "id": "c3", "label": "Check company policy first", "next": "checked_policy", "effects": { "xp": 8, "bias": ["debias_present_bias"], "feedback": "Good process adherence", "severity": "good" } },
+        { "id": "c4", "label": "Forward to finance team", "next": "forwarded", "effects": { "xp": 6, "bias": [], "feedback": "Good escalation, but verify the source first", "severity": "caution" } }
+      ]
+    },
+    {
+      "id": "processed",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "You processed the transfer. Later, you discover this was a BEC attack and the money has been stolen. The real CEO never sent this email.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "breach", "effects": { "xp": -5, "bias": [], "feedback": "This is why verification is crucial", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "called_ceo",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The CEO confirms she never sent this email. She thanks you for being cautious and reports the incident to IT security.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 5, "bias": [], "feedback": "Excellent security awareness", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "checked_policy",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Company policy requires dual approval for transfers over €10,000. You realize this request bypasses proper procedures.",
+      "choices": [
+        { "id": "c1", "label": "Report to security", "next": "success", "effects": { "xp": 8, "bias": [], "feedback": "Great policy adherence", "severity": "good" } },
+        { "id": "c2", "label": "Process anyway due to urgency", "next": "breach", "effects": { "xp": -5, "bias": ["present_bias"], "feedback": "Policies exist for security reasons", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "forwarded",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The finance team investigates and discovers this is a BEC attack. They block the transfer and report the incident.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 4, "bias": [], "feedback": "Good escalation, but verify first next time", "severity": "caution" } }
+      ]
+    },
+    { "id": "success", "actor": "system", "kind": "end", "text": "Excellent work! You successfully identified a sophisticated BEC attack and followed proper security procedures." },
+    { "id": "breach", "actor": "system", "kind": "end", "text": "This was a BEC attack. Remember: always verify high-value requests through official channels, even from executives." }
+  ]
+}

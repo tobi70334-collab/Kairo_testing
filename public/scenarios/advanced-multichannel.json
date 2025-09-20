@@ -1,0 +1,71 @@
+{
+  "title": "Advanced: Multi-Channel Attack",
+  "difficulty": "advanced",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 15 },
+    { "tier": "Silver", "xp": 35 },
+    { "tier": "Gold", "xp": 55 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "You receive an email from the CFO about an urgent vendor payment. Moments later, you get a phone call from someone claiming to be the CFO's assistant, confirming the email and adding pressure about a deadline.",
+      "timerSec": 60,
+      "evidence": [
+        { "id": "email", "label": "Email analysis", "text": "From: cfo@company.com - Domain appears legitimate" },
+        { "id": "phone", "label": "Phone call details", "text": "Caller ID shows company number, voice sounds familiar" },
+        { "id": "context", "label": "Context clues", "text": "Mentions recent board meeting and budget approval" },
+        { "id": "urgency", "label": "Pressure tactics", "text": "Deadline in 2 hours, vendor threatening to cancel contract" }
+      ],
+      "choices": [
+        { "id": "c1", "label": "Process the payment immediately", "next": "processed", "effects": { "xp": -12, "bias": ["authority_bias", "present_bias", "bandwagon_effect"], "feedback": "Multi-channel attacks are designed to overwhelm your judgment", "severity": "bad" } },
+        { "id": "c2", "label": "Verify with the real CFO", "next": "verified_cfo", "effects": { "xp": 12, "bias": ["debias_authority_bias"], "feedback": "Excellent! Always verify through known channels", "severity": "good" } },
+        { "id": "c3", "label": "Check the email headers carefully", "next": "checked_headers", "effects": { "xp": 10, "bias": ["debias_overconfidence"], "feedback": "Good technical verification", "severity": "good" } },
+        { "id": "c4", "label": "Ask for written authorization", "next": "asked_auth", "effects": { "xp": 8, "bias": ["debias_present_bias"], "feedback": "Good process, but verify the source first", "severity": "caution" } }
+      ]
+    },
+    {
+      "id": "processed",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "You processed the payment. Later investigation reveals both the email and phone call were part of a sophisticated BEC attack. The attackers had researched your company and used social engineering.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "breach", "effects": { "xp": -8, "bias": [], "feedback": "Multi-channel attacks are designed to bypass single-point verification", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "verified_cfo",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The real CFO confirms this was a sophisticated attack. The attackers had compromised the company's phone system and were using spoofed numbers. Your verification prevented a major loss.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 8, "bias": [], "feedback": "Outstanding security awareness", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "checked_headers",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "Email headers reveal the message was sent from a compromised account. The domain was legitimate but the account had been hacked. You've identified a real security incident.",
+      "choices": [
+        { "id": "c1", "label": "Report to IT security", "next": "success", "effects": { "xp": 10, "bias": [], "feedback": "Great technical analysis and incident response", "severity": "good" } },
+        { "id": "c2", "label": "Process the payment anyway", "next": "breach", "effects": { "xp": -5, "bias": ["optimism_bias"], "feedback": "Even with evidence of compromise, verify through other channels", "severity": "bad" } }
+      ]
+    },
+    {
+      "id": "asked_auth",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The 'assistant' provides a scanned authorization document that looks official. They're becoming more aggressive about the deadline.",
+      "choices": [
+        { "id": "c1", "label": "Accept the scanned document", "next": "breach", "effects": { "xp": -8, "bias": ["confirmation_bias"], "feedback": "Scanned documents can be easily forged", "severity": "bad" } },
+        { "id": "c2", "label": "Insist on speaking directly to CFO", "next": "success", "effects": { "xp": 10, "bias": ["debias_confirmation_bias"], "feedback": "Perfect! Never accept documents without verification", "severity": "good" } }
+      ]
+    },
+    { "id": "success", "actor": "system", "kind": "end", "text": "Outstanding work! You successfully identified and prevented a sophisticated multi-channel BEC attack. Your security awareness is excellent." },
+    { "id": "breach", "actor": "system", "kind": "end", "text": "This was a sophisticated multi-channel attack. Remember: attackers use multiple channels to create pressure and bypass normal verification processes." }
+  ]
+}

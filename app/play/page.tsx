@@ -47,7 +47,8 @@ export default function PlayPage() {
   useEffect(() => {
     const loadScenario = async () => {
       try {
-        const response = await fetch('/scenarios/wire-transfer-mirage.json');
+        const scenarioId = localStorage.getItem('kairo.scenario') || 'wire-transfer-mirage';
+        const response = await fetch(`/scenarios/${scenarioId}.json`);
         const data = await response.json();
         setScenario(data);
       } catch (error) {
