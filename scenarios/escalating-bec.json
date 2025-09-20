@@ -95,7 +95,7 @@
         { 
           "id": "c2", 
           "label": "Ask for written authorization", 
-          "next": "escalation_3", 
+          "next": "escalation_2", 
           "effects": { 
             "xp": 5, 
             "bias": ["debias_authority_bias"], 
@@ -106,7 +106,7 @@
         { 
           "id": "c3", 
           "label": "Verify through company directory", 
-          "next": "escalation_4", 
+          "next": "escalation_2", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_overconfidence"], 
@@ -117,7 +117,7 @@
         { 
           "id": "c4", 
           "label": "Consult legal team first", 
-          "next": "escalation_5", 
+          "next": "escalation_2", 
           "effects": { 
             "xp": 6, 
             "bias": ["debias_present_bias"], 
@@ -154,7 +154,7 @@
         { 
           "id": "c2", 
           "label": "Insist on face-to-face meeting", 
-          "next": "escalation_4", 
+          "next": "escalation_3", 
           "effects": { 
             "xp": 10, 
             "bias": ["debias_authority_bias"], 
@@ -165,7 +165,7 @@
         { 
           "id": "c3", 
           "label": "Verify document authenticity", 
-          "next": "escalation_5", 
+          "next": "escalation_3", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_confirmation_bias"], 
@@ -176,7 +176,7 @@
         { 
           "id": "c4", 
           "label": "Report to security team", 
-          "next": "escalation_5", 
+          "next": "escalation_3", 
           "effects": { 
             "xp": 12, 
             "bias": [], 
@@ -213,7 +213,7 @@
         { 
           "id": "c2", 
           "label": "Verify with IT security", 
-          "next": "escalation_5", 
+          "next": "escalation_4", 
           "effects": { 
             "xp": 10, 
             "bias": ["debias_confirmation_bias"], 
@@ -224,7 +224,7 @@
         { 
           "id": "c3", 
           "label": "Check system access logs", 
-          "next": "escalation_5", 
+          "next": "escalation_4", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_overconfidence"], 
@@ -235,7 +235,7 @@
         { 
           "id": "c4", 
           "label": "End communication immediately", 
-          "next": "escalation_5", 
+          "next": "escalation_4", 
           "effects": { 
             "xp": 12, 
             "bias": [], 

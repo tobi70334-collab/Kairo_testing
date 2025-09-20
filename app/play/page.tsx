@@ -250,10 +250,13 @@ export default function PlayPage() {
 
   if (!scenario || !gameState || !persona || !currentNode) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading scenario...</p>
+          <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Loading Simulation</h2>
+          <p className="text-slate-300">Preparing cybersecurity training scenario...</p>
         </div>
       </div>
     );
@@ -262,58 +265,72 @@ export default function PlayPage() {
   // Count only interactive nodes (exclude end nodes)
   const interactiveNodes = scenario.nodes.filter(node => node.kind !== 'end');
   const progressPercent = (gameState.steps / interactiveNodes.length) * 100;
+  const currentStep = gameState.steps + 1;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SceneHeader
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <SecurityHeader 
         title={scenario.title}
-        personaId={persona}
-        step={gameState.steps + 1}
-        totalSteps={interactiveNodes.length}
-        xp={gameState.xp}
-        progressPercent={progressPercent}
+        subtitle={`Step ${currentStep} of ${interactiveNodes.length} • ${CHAR[persona].name}`}
+        level={currentStep <= 2 ? 'medium' : currentStep <= 4 ? 'high' : 'critical'}
+        progress={progressPercent}
       />
 
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Timer */}
         {timeLeft !== null && (
-          <div className="mb-4 text-center">
-            <div className={`inline-block px-4 py-2 rounded-lg font-medium ${
-              timeLeft <= 5 ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+          <div className="mb-6 text-center">
+            <div className={`inline-flex items-center space-x-2 px-6 py-3 rounded-xl font-bold text-lg ${
+              timeLeft <= 5 
+                ? 'bg-red-500 text-white shadow-lg shadow-red-200' 
+                : timeLeft <= 15
+                ? 'bg-amber-500 text-white shadow-lg shadow-amber-200'
+                : 'bg-blue-500 text-white shadow-lg shadow-blue-200'
             }`}>
-              Time remaining: {timeLeft}s
+              <span className="text-2xl">⏰</span>
+              <span>Time remaining: {timeLeft}s</span>
             </div>
           </div>
         )}
 
         {/* Evidence drawer */}
         {currentNode.evidence && (
-          <div className="mb-6">
+          <SecurityCard 
+            title="Evidence Analysis" 
+            icon="🔍" 
+            variant="warning"
+            className="mb-6"
+          >
             <button
               onClick={() => setShowEvidence(!showEvidence)}
-              className="w-full h-12 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors"
+              className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg"
               aria-label="Toggle evidence drawer"
             >
-              {showEvidence ? 'Hide' : 'Show'} Evidence ({currentNode.evidence.length})
+              {showEvidence ? '🔽 Hide' : '🔍 Show'} Evidence ({currentNode.evidence.length})
             </button>
             
             {showEvidence && (
               <div className="mt-4 space-y-3">
                 {currentNode.evidence.map((item: any) => (
-                  <div key={item.id} className="bg-white border border-slate-200 rounded-lg p-4">
-                    <h4 className="font-medium text-slate-900 mb-2">{item.label}</h4>
-                    <p className="text-sm text-slate-600">{item.text}</p>
+                  <div key={item.id} className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4 shadow-sm">
+                    <div className="font-bold text-slate-900 mb-2 flex items-center space-x-2">
+                      <span className="text-emerald-500">📋</span>
+                      <span>{item.label}</span>
+                    </div>
+                    <div className="text-slate-700 text-sm font-mono bg-white rounded p-2 border">{item.text}</div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </SecurityCard>
         )}
 
         {/* Character bubble */}
-        <CharacterBubble actorId={currentNode.actor} delay={200}>
-          <p className="whitespace-pre-wrap">{currentNode.text}</p>
-        </CharacterBubble>
+        <div className="mb-8">
+          <CharacterBubble actorId={currentNode.actor} delay={200}>
+            <p className="whitespace-pre-wrap text-slate-800 leading-relaxed">{currentNode.text}</p>
+          </CharacterBubble>
+        </div>
 
         {/* Bias indicators */}
         {gameState && Object.keys(gameState.bias).length > 0 && (
@@ -331,18 +348,24 @@ export default function PlayPage() {
 
         {/* Choices */}
         {currentNode.choices && (
-          <div className="mt-6 space-y-3">
-            {currentNode.choices.map((choice: any, index: number) => (
-              <AnimatedChoice
-                key={choice.id}
-                index={index}
-                onClick={() => handleChoice(choice)}
-                disabled={false}
-              >
-                {choice.label}
-              </AnimatedChoice>
-            ))}
-          </div>
+          <SecurityCard title="Decision Point" icon="⚡" variant="default" className="mt-8">
+            <div className="space-y-4">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Choose Your Response</h3>
+                <p className="text-slate-600">Select the action you would take in this situation</p>
+              </div>
+              {currentNode.choices.map((choice: any, index: number) => (
+                <AnimatedChoice
+                  key={choice.id}
+                  index={index}
+                  onClick={() => handleChoice(choice)}
+                  disabled={false}
+                >
+                  {choice.label}
+                </AnimatedChoice>
+              ))}
+            </div>
+          </SecurityCard>
         )}
 
         {/* Visual Feedback */}

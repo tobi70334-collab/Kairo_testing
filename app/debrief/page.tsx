@@ -5,6 +5,9 @@ import Link from 'next/link';
 import BadgeModal from '../../components/BadgeModal';
 import ProgressRing from '../../components/ProgressRing';
 import BiasIndicator from '../../components/BiasIndicator';
+import SecurityHeader from '../../components/SecurityHeader';
+import SecurityCard from '../../components/SecurityCard';
+import ThreatIndicator from '../../components/ThreatIndicator';
 import { tierFromXP } from '../../lib/engine-v2';
 import { CharacterId, CHAR } from '../../lib/characters';
 import { AchievementManager } from '../../lib/achievements';
@@ -36,7 +39,6 @@ export default function DebriefPage() {
     const personaId = localStorage.getItem('kairo.persona') as CharacterId;
     
     if (!resultData || !personaId) {
-      // Redirect to home if no result
       window.location.href = '/';
       return;
     }
@@ -62,52 +64,30 @@ export default function DebriefPage() {
 
   const getBiasTips = () => {
     if (!result) return [];
-
-    // Get top two bias keys (excluding debias_ prefixed ones)
-    const biasEntries = Object.entries(result.bias)
-      .filter(([key]) => !key.startsWith('debias_'))
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 2);
-
-    const biasTips: Record<string, string[]> = {
-      overconfidence: [
-        "Pause and verify sender domains",
-        "Ask for a second check above 5k EUR"
-      ],
-      authority_bias: [
-        "Voice confirm urgent CEO requests out of band"
-      ],
-      alert_fatigue: [
-        "Treat high severity alerts as tasks, not popups"
-      ],
-      present_bias: [
-        "Slow down when a timer is used as pressure"
-      ],
-      confirmation_bias: [
-        "Verify using a separate, trusted channel"
-      ],
-      curiosity_bias: [
-        "Do not click portals from email; go direct"
-      ]
-    };
-
-    return biasEntries.map(([biasKey, count]) => ({
-      bias: biasKey,
-      count,
-      tips: biasTips[biasKey] || ["Consider this bias in future decisions"]
-    }));
+    
+    const tips = [];
+    if (result.bias.authority_bias > 0) {
+      tips.push("Authority Bias: Always verify requests from executives through independent channels");
+    }
+    if (result.bias.present_bias > 0) {
+      tips.push("Present Bias: Don't let urgency override security procedures");
+    }
+    if (result.bias.confirmation_bias > 0) {
+      tips.push("Confirmation Bias: Seek evidence that contradicts your initial assumptions");
+    }
+    if (result.bias.overconfidence > 0) {
+      tips.push("Overconfidence: Even experienced professionals can be targeted");
+    }
+    
+    return tips;
   };
 
-  const getSeverityIcon = (severity: 'good'|'caution'|'bad') => {
+  const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case 'good':
-        return '✅';
-      case 'caution':
-        return '⚠️';
-      case 'bad':
-        return '❌';
-      default:
-        return '•';
+      case 'good': return '✅';
+      case 'caution': return '⚠️';
+      case 'bad': return '❌';
+      default: return 'ℹ️';
     }
   };
 
@@ -117,10 +97,13 @@ export default function DebriefPage() {
 
   if (!result || !persona) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading results...</p>
+          <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Loading Results</h2>
+          <p className="text-slate-300">Analyzing your performance...</p>
         </div>
       </div>
     );
@@ -128,94 +111,46 @@ export default function DebriefPage() {
 
   const personaInfo = CHAR[persona];
   const biasTips = getBiasTips();
+  const successRate = Math.round((result.events.filter(e => e.severity === 'good').length / result.events.length) * 100);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-4xl mx-auto p-4">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Training Complete</h1>
-            <p className="text-slate-600 mb-4">
-              Well done, {personaInfo.name}!
-            </p>
-            
-            <div className="flex items-center justify-center space-x-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600">{result.xp}</div>
-                <div className="text-sm text-slate-500">XP Earned</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-slate-600">{result.events.length}</div>
-                <div className="text-sm text-slate-500">Decisions Made</div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <SecurityHeader 
+        title="Training Complete" 
+        subtitle={`Well done, ${personaInfo.name}!`}
+        level={successRate >= 80 ? 'low' : successRate >= 60 ? 'medium' : 'high'}
+      />
+      
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Performance Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <SecurityCard title="Performance Score" icon="📊" variant="success">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-emerald-600 mb-2">{result.xp}</div>
+              <div className="text-slate-600 font-medium">Total XP</div>
             </div>
-          </div>
+          </SecurityCard>
+          
+          <SecurityCard title="Decisions Made" icon="🎯" variant="default">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-slate-800 mb-2">{result.events.length}</div>
+              <div className="text-slate-600 font-medium">Total Decisions</div>
+            </div>
+          </SecurityCard>
+          
+          <SecurityCard title="Success Rate" icon="🏆" variant={successRate >= 80 ? 'success' : successRate >= 60 ? 'warning' : 'danger'}>
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-2">{successRate}%</div>
+              <div className="text-slate-600 font-medium">Success Rate</div>
+            </div>
+          </SecurityCard>
         </div>
 
-        {/* Badge Hero */}
-        {badge && (
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 mb-6 text-white text-center">
-            <div className="text-6xl mb-4">
-              {badge.tier === 'Bronze' ? '🥉' : badge.tier === 'Silver' ? '🥈' : '🥇'}
-            </div>
-            <h2 className="text-2xl font-bold mb-2">{badge.tier} Badge Earned!</h2>
-            <p className="text-emerald-100">
-              You've demonstrated strong security awareness
-            </p>
-          </div>
-        )}
-
-        {/* Bias Tips */}
-        {biasTips.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h3 className="text-xl font-semibold text-slate-900 mb-4">Bias Insights</h3>
-            <div className="space-y-4">
-              {biasTips.map(({ bias, count, tips }) => (
-                <div key={bias} className="border-l-4 border-amber-400 pl-4">
-                  <h4 className="font-medium text-slate-900 capitalize mb-2">
-                    {bias.replace(/_/g, ' ')} ({count} instances)
-                  </h4>
-                  <ul className="space-y-1">
-                    {tips.map((tip, index) => (
-                      <li key={index} className="text-sm text-slate-600">
-                        • {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Analytics Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Performance Overview */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Performance</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-600">Total XP</span>
-                <span className="text-2xl font-bold text-emerald-600">{result.xp}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-600">Decisions Made</span>
-                <span className="text-xl font-semibold text-slate-800">{result.events.length}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-600">Success Rate</span>
-                <span className="text-xl font-semibold text-slate-800">
-                  {Math.round((result.events.filter(e => e.severity === 'good').length / result.events.length) * 100)}%
-                </span>
-              </div>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Bias Analysis */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Bias Analysis</h3>
-            <div className="space-y-3">
+          <SecurityCard title="Bias Analysis" icon="🧠" variant="warning">
+            <div className="space-y-4">
               {Object.entries(result.bias).length > 0 ? (
                 Object.entries(result.bias).map(([biasType, count]) => (
                   <BiasIndicator
@@ -226,81 +161,115 @@ export default function DebriefPage() {
                   />
                 ))
               ) : (
-                <p className="text-slate-500 text-sm">No biases detected</p>
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-4">🎉</div>
+                  <p className="text-slate-600 font-medium">No biases detected!</p>
+                  <p className="text-slate-500 text-sm">Excellent decision-making</p>
+                </div>
               )}
             </div>
-          </div>
+          </SecurityCard>
 
           {/* Achievements */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Achievements</h3>
-            <div className="space-y-2">
+          <SecurityCard title="Achievements" icon="🏆" variant="default">
+            <div className="space-y-3">
               {unlockedAchievements.length > 0 ? (
-                unlockedAchievements.slice(0, 3).map((achievement) => (
-                  <div key={achievement.id} className="flex items-center space-x-2">
-                    <span className="text-lg">{achievement.icon}</span>
-                    <span className="text-sm text-slate-700">{achievement.name}</span>
+                unlockedAchievements.slice(0, 4).map((achievement) => (
+                  <div key={achievement.id} className="flex items-center space-x-3 p-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg">
+                    <span className="text-2xl">{achievement.icon}</span>
+                    <div className="flex-1">
+                      <div className="font-semibold text-slate-900">{achievement.name}</div>
+                      <div className="text-sm text-slate-600">{achievement.description}</div>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      achievement.rarity === 'common' ? 'bg-slate-200 text-slate-800' :
+                      achievement.rarity === 'rare' ? 'bg-blue-200 text-blue-800' :
+                      achievement.rarity === 'epic' ? 'bg-purple-200 text-purple-800' :
+                      'bg-yellow-200 text-yellow-800'
+                    }`}>
+                      {achievement.rarity.toUpperCase()}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="text-slate-500 text-sm">No achievements yet</p>
-              )}
-              {unlockedAchievements.length > 3 && (
-                <p className="text-xs text-slate-500">+{unlockedAchievements.length - 3} more</p>
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-4">🎯</div>
+                  <p className="text-slate-600 font-medium">No achievements yet</p>
+                  <p className="text-slate-500 text-sm">Keep training to unlock badges</p>
+                </div>
               )}
             </div>
-          </div>
+          </SecurityCard>
         </div>
 
-        {/* Event Timeline */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-          <h3 className="text-xl font-semibold text-slate-900 mb-4">Decision Timeline</h3>
-          <div className="space-y-3">
+        {/* Decision Timeline */}
+        <SecurityCard title="Decision Timeline" icon="📈" variant="default" className="mb-8">
+          <div className="space-y-4">
             {result.events.map((event, index) => (
-              <div key={index} className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg">
-                <div className="text-lg">
+              <div key={index} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border border-slate-200">
+                <div className="text-2xl">
                   {getSeverityIcon(event.severity)}
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-slate-900">
+                  <div className="font-semibold text-slate-900">
                     Decision {index + 1}
                   </div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-sm text-slate-500">
                     {formatTimestamp(event.ts)} • {event.xp > 0 ? '+' : ''}{event.xp} XP
                   </div>
                 </div>
-                <div className="text-sm text-slate-600">
+                <div className="text-right">
                   {event.bias.length > 0 && (
-                    <span className="text-xs bg-slate-200 px-2 py-1 rounded">
-                      {event.bias.join(', ')}
-                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {event.bias.map((bias, idx) => (
+                        <span key={idx} className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">
+                          {bias}
+                        </span>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </SecurityCard>
+
+        {/* Bias Tips */}
+        {biasTips.length > 0 && (
+          <SecurityCard title="Improvement Tips" icon="💡" variant="warning" className="mb-8">
+            <div className="space-y-3">
+              {biasTips.map((tip, index) => (
+                <div key={index} className="flex items-start space-x-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <span className="text-amber-500 text-lg">💡</span>
+                  <p className="text-slate-700 text-sm">{tip}</p>
+                </div>
+              ))}
+            </div>
+          </SecurityCard>
+        )}
 
         {/* Actions */}
         <div className="text-center">
           <Link
             href="/play"
-            className="inline-block w-full md:w-auto h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-xl px-8 transition-colors"
-            aria-label="Play again"
+            className="inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            Play Again
+            <span className="text-2xl">🔄</span>
+            <span>Play Again</span>
           </Link>
         </div>
       </div>
 
       {/* Badge Modal */}
-      <BadgeModal
-        isOpen={showBadgeModal}
-        onClose={() => setShowBadgeModal(false)}
-        tier={badge?.tier || ''}
-        xp={badge?.xp || 0}
-        reason="You've demonstrated strong security awareness"
-      />
+      {showBadgeModal && badge && (
+        <BadgeModal
+          isOpen={true}
+          onClose={() => setShowBadgeModal(false)}
+          tier={badge.tier}
+          xp={badge.xp}
+          reason={`Earned ${badge.tier} badge for ${badge.xp} XP`}
+        />
+      )}
     </div>
   );
 }
