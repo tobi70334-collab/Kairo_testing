@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAIRO Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-button { padding: 10px 20px; margin: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .test-button:hover { background: #45a049; }
+        .test-result { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>KAIRO Test Page</h1>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function TestApp() {
+            const [selectedPersona, setSelectedPersona] = React.useState(null);
+            const [selectedScenario, setSelectedScenario] = React.useState(null);
+
+            const handleStart = () => {
+                if (selectedPersona && selectedScenario) {
+                    localStorage.setItem('kairo.persona', selectedPersona);
+                    localStorage.setItem('kairo.scenario', selectedScenario);
+                    alert('Starting simulation with: ' + selectedPersona + ' / ' + selectedScenario);
+                }
+            };
+
+            return (
+                <div>
+                    <h2>Test Role Selection</h2>
+                    <div>
+                        <button 
+                            className="test-button"
+                            onClick={() => setSelectedPersona('acct')}
+                            style={{backgroundColor: selectedPersona === 'acct' ? '#2196F3' : '#4CAF50'}}
+                        >
+                            Senior Accountant
+                        </button>
+                        <button 
+                            className="test-button"
+                            onClick={() => setSelectedPersona('pm')}
+                            style={{backgroundColor: selectedPersona === 'pm' ? '#2196F3' : '#4CAF50'}}
+                        >
+                            Project Manager
+                        </button>
+                    </div>
+                    
+                    <h2>Test Scenario Selection</h2>
+                    <div>
+                        <button 
+                            className="test-button"
+                            onClick={() => setSelectedScenario('escalating-bec')}
+                            style={{backgroundColor: selectedScenario === 'escalating-bec' ? '#2196F3' : '#4CAF50'}}
+                        >
+                            Escalating BEC Attack
+                        </button>
+                    </div>
+
+                    <div className="test-result">
+                        <p>Selected Persona: {selectedPersona || 'None'}</p>
+                        <p>Selected Scenario: {selectedScenario || 'None'}</p>
+                    </div>
+
+                    <button 
+                        className="test-button"
+                        onClick={handleStart}
+                        disabled={!selectedPersona || !selectedScenario}
+                        style={{backgroundColor: (!selectedPersona || !selectedScenario) ? '#ccc' : '#FF9800'}}
+                    >
+                        {!selectedPersona ? 'Select a role' : !selectedScenario ? 'Select a scenario' : 'Start Simulation'}
+                    </button>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

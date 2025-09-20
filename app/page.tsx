@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CharacterId, CHAR } from '../lib/characters';
 import SecurityHeader from '../components/SecurityHeader';
@@ -29,7 +29,13 @@ const SCENARIOS: Scenario[] = [
 export default function LandingPage() {
   const [selectedPersona, setSelectedPersona] = useState<CharacterId | null>(null);
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleStart = () => {
     if (selectedPersona && selectedScenario) {
@@ -194,17 +200,23 @@ export default function LandingPage() {
 
         {/* Start Button */}
         <div className="text-center mt-8">
-          <button
-            onClick={handleStart}
-            disabled={!selectedPersona || !selectedScenario}
-            className={`px-12 py-4 rounded-xl font-bold text-lg transition-all ${
-              selectedPersona && selectedScenario
-                ? 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-            }`}
-          >
-            {!selectedPersona ? 'Select a role' : !selectedScenario ? 'Select a scenario' : '🚀 Start Training'}
-          </button>
+          {isClient ? (
+            <button
+              onClick={handleStart}
+              disabled={!selectedPersona || !selectedScenario}
+              className={`px-12 py-4 rounded-xl font-bold text-lg transition-all ${
+                selectedPersona && selectedScenario
+                  ? 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+              }`}
+            >
+              {!selectedPersona ? 'Select a role' : !selectedScenario ? 'Select a scenario' : '🚀 Start Training'}
+            </button>
+          ) : (
+            <div className="px-12 py-4 rounded-xl font-bold text-lg bg-slate-300 text-slate-500 cursor-not-allowed">
+              Loading...
+            </div>
+          )}
         </div>
 
         {/* Features */}
