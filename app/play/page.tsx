@@ -156,12 +156,20 @@ export default function PlayPage() {
   }, [timeLeft, currentNode, startTime, gameState]);
 
   const handleChoice = useCallback((choice: any) => {
-    if (!gameState || !scenario) return;
+    if (!gameState || !scenario) {
+      console.error('Missing gameState or scenario:', { gameState, scenario });
+      return;
+    }
+
+    console.log('Choice selected:', choice);
+    console.log('Current gameState:', gameState);
+    console.log('Looking for next node:', choice.next);
 
     // Play sound effect
     playClickSound();
     
     const newState = applyChoiceV2(gameState, choice.effects, choice.id);
+    console.log('New state after choice:', newState);
     
     // Play feedback sound
     if (choice.effects.severity === 'good') {
@@ -174,8 +182,11 @@ export default function PlayPage() {
     
     // Move to next node
     const nextNode = scenario.nodes.find(n => n.id === choice.next);
+    console.log('Found next node:', nextNode);
+    
     if (nextNode) {
       if (nextNode.kind === 'end') {
+        console.log('Reached end node, going to debrief');
         // Check achievements
         const gameStats = {
           totalXP: newState.xp,
@@ -203,8 +214,10 @@ export default function PlayPage() {
         localStorage.removeItem('kairo.state');
         router.push('/debrief');
       } else {
+        console.log('Moving to next node:', choice.next);
         // Update game state with new node ID
         const updatedState = { ...newState, nodeId: choice.next };
+        console.log('Updated state:', updatedState);
         setGameState(updatedState);
         localStorage.setItem('kairo.state', JSON.stringify(updatedState));
         
@@ -217,6 +230,9 @@ export default function PlayPage() {
           setTimeLeft(null);
         }
       }
+    } else {
+      console.error('Next node not found:', choice.next);
+      console.log('Available nodes:', scenario.nodes.map(n => n.id));
     }
 
     // Show feedback
