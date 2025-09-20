@@ -1,0 +1,67 @@
+{
+  "title": "Beginner: Suspicious Email",
+  "difficulty": "beginner",
+  "personas": [{ "id": "acct" }, { "id": "pm" }],
+  "badges": [
+    { "tier": "Bronze", "xp": 5 },
+    { "tier": "Silver", "xp": 15 },
+    { "tier": "Gold", "xp": 25 }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "You receive an email claiming to be from your bank asking you to verify your account details. The email looks official but something feels off.",
+      "evidence": [
+        { "id": "sender", "label": "Sender address", "text": "security@bank-verification.com" },
+        { "id": "urgency", "label": "Urgency level", "text": "Account will be suspended in 24 hours" }
+      ],
+      "choices": [
+        { "id": "c1", "label": "Click the verification link", "next": "clicked", "effects": { "xp": -3, "bias": ["curiosity_bias"], "feedback": "Never click links in suspicious emails", "severity": "bad" } },
+        { "id": "c2", "label": "Call the bank directly", "next": "called", "effects": { "xp": 8, "bias": ["debias_authority_bias"], "feedback": "Excellent! Always verify through official channels", "severity": "good" } },
+        { "id": "c3", "label": "Forward to IT security", "next": "reported", "effects": { "xp": 6, "bias": [], "feedback": "Good security practice", "severity": "good" } },
+        { "id": "c4", "label": "Delete the email", "next": "deleted", "effects": { "xp": 4, "bias": [], "feedback": "Safe choice, but reporting is better", "severity": "caution" } }
+      ]
+    },
+    {
+      "id": "clicked",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The link took you to a fake website that looks like your bank's login page. You realize this is a phishing attempt.",
+      "choices": [
+        { "id": "c1", "label": "Enter your credentials", "next": "breach", "effects": { "xp": -10, "bias": ["overconfidence"], "feedback": "Never enter credentials on suspicious sites", "severity": "bad" } },
+        { "id": "c2", "label": "Close the browser and report", "next": "success", "effects": { "xp": 5, "bias": ["debias_curiosity"], "feedback": "Good recovery! You recognized the threat", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "called",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "The bank confirms this was a phishing attempt. They thank you for reporting it and confirm your account is secure.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 2, "bias": [], "feedback": "Perfect security response", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "reported",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "IT security confirms this was a phishing attempt and has blocked the sender. Your quick reporting helped protect others.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 2, "bias": [], "feedback": "Great teamwork on security", "severity": "good" } }
+      ]
+    },
+    {
+      "id": "deleted",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "You safely deleted the email, but consider reporting suspicious emails to help protect your colleagues.",
+      "choices": [
+        { "id": "c1", "label": "Continue", "next": "success", "effects": { "xp": 1, "bias": [], "feedback": "Safe but could be more proactive", "severity": "caution" } }
+      ]
+    },
+    { "id": "success", "actor": "system", "kind": "end", "text": "Well done! You successfully identified and handled a phishing attempt. This is the foundation of good cybersecurity awareness." },
+    { "id": "breach", "actor": "system", "kind": "end", "text": "Unfortunately, you fell for the phishing attempt. This is a learning opportunity - always verify suspicious communications through official channels." }
+  ]
+}

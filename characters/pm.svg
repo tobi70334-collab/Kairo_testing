@@ -1,6 +1,31 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="32" cy="32" r="32" fill="#10b981"/>
-  <circle cx="32" cy="24" r="8" fill="white"/>
-  <path d="M16 48c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="white"/>
-  <text x="32" y="36" text-anchor="middle" fill="#064e3b" font-family="Arial, sans-serif" font-size="12" font-weight="bold">PM</text>
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="40" cy="40" r="40" fill="#10b981"/>
+  
+  <!-- Professional blazer -->
+  <path d="M25 35h30v35H25z" fill="#064e3b"/>
+  <path d="M30 40h20v25H30z" fill="#065f46"/>
+  
+  <!-- Head -->
+  <circle cx="40" cy="28" r="12" fill="#fbbf24"/>
+  
+  <!-- Hair (professional bob) -->
+  <path d="M28 18c0-4 3-8 12-8s12 4 12 8v10H28V18z" fill="#7c2d12"/>
+  
+  <!-- Eyes -->
+  <circle cx="36" cy="26" r="2" fill="#1f2937"/>
+  <circle cx="44" cy="26" r="2" fill="#1f2937"/>
+  
+  <!-- Professional makeup -->
+  <path d="M34 30c0 1 1 2 6 2s6-1 6-2" stroke="#e11d48" stroke-width="0.8" fill="none"/>
+  
+  <!-- Confident smile -->
+  <path d="M34 32c0 2 2 4 6 4s6-2 6-4" stroke="#1f2937" stroke-width="1.5" fill="none"/>
+  
+  <!-- Blouse -->
+  <path d="M32 35h16v8H32z" fill="#f8fafc"/>
+  
+  <!-- Name badge -->
+  <rect x="35" y="45" width="10" height="6" rx="1" fill="#fbbf24"/>
+  <text x="40" y="49" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="4" font-weight="bold">PM</text>
 </svg>
