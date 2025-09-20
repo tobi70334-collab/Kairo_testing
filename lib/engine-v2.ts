@@ -28,7 +28,7 @@ export interface Badge {
   xp: number;
 }
 
-export function applyChoiceV2(state: GameState, effects: ChoiceEffects): GameState {
+export function applyChoiceV2(state: GameState, effects: ChoiceEffects, choiceId: string = ''): GameState {
   const newState = { ...state };
   
   // Add XP with streak bonus
@@ -55,7 +55,7 @@ export function applyChoiceV2(state: GameState, effects: ChoiceEffects): GameSta
   // Add event
   const event: EventItem = {
     nodeId: state.nodeId,
-    choiceId: '', // Will be set by caller
+    choiceId: choiceId,
     xp: xpGain,
     bias: effects.bias || [],
     ts: Date.now(),

@@ -123,12 +123,12 @@ export default function PlayPage() {
       const elapsed = Date.now() - startTime;
       const penalty = tickTimer(currentNode, elapsed);
       if (penalty) {
-        const newState = applyChoiceV2(gameState!, { ...penalty, choiceId: 'timer_expired' });
+        const newState = applyChoiceV2(gameState!, penalty, 'timer_expired');
         setGameState(newState);
         localStorage.setItem('kairo.state', JSON.stringify(newState));
         
         // Auto-advance to caution path if available
-        const cautionChoice = currentNode.choices?.find(c => c.effects.severity === 'caution');
+        const cautionChoice = currentNode.choices?.find((c: any) => c.effects.severity === 'caution');
         if (cautionChoice) {
           setTimeout(() => {
             handleChoice(cautionChoice);
@@ -141,7 +141,7 @@ export default function PlayPage() {
   const handleChoice = useCallback((choice: any) => {
     if (!gameState || !scenario) return;
 
-    const newState = applyChoiceV2(gameState, { ...choice.effects, choiceId: choice.id });
+    const newState = applyChoiceV2(gameState, choice.effects, choice.id);
     
     // Move to next node
     const nextNode = scenario.nodes.find(n => n.id === choice.next);
