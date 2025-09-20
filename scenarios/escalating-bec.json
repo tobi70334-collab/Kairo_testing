@@ -25,7 +25,7 @@
         { 
           "id": "c1", 
           "label": "Process the transfer immediately", 
-          "next": "escalation_1", 
+          "next": "escalation_immediate", 
           "effects": { 
             "xp": -5, 
             "bias": ["authority_bias", "present_bias"], 
@@ -36,7 +36,7 @@
         { 
           "id": "c2", 
           "label": "Verify with CEO directly", 
-          "next": "escalation_2", 
+          "next": "escalation_verify", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_authority_bias"], 
@@ -47,7 +47,7 @@
         { 
           "id": "c3", 
           "label": "Check company policy first", 
-          "next": "escalation_3", 
+          "next": "escalation_policy", 
           "effects": { 
             "xp": 6, 
             "bias": ["debias_present_bias"], 
@@ -58,7 +58,7 @@
         { 
           "id": "c4", 
           "label": "Forward to finance team", 
-          "next": "escalation_4", 
+          "next": "escalation_forward", 
           "effects": { 
             "xp": 4, 
             "bias": [], 
@@ -69,33 +69,33 @@
       ]
     },
     {
-      "id": "escalation_1",
+      "id": "escalation_immediate",
       "actor": "impostor",
       "kind": "narrative",
-      "text": "The CEO calls you directly, confirming the transfer and adding pressure about a critical deadline. She mentions confidential information about an upcoming acquisition that requires this payment to proceed.",
-      "timerSec": 45,
+      "text": "The CEO calls you directly, furious about the delay. She claims the vendor is threatening to cancel a critical contract worth millions. She demands immediate action and threatens to involve the board if you don't comply.",
+      "timerSec": 30,
       "evidence": [
         { "id": "caller_id", "label": "Caller ID", "text": "Company main number" },
-        { "id": "voice", "label": "Voice", "text": "Sounds like the CEO" },
-        { "id": "context", "label": "Context", "text": "Mentions real company projects" },
-        { "id": "pressure", "label": "Pressure", "text": "Deadline in 2 hours" }
+        { "id": "threats", "label": "Threats", "text": "Board involvement mentioned" },
+        { "id": "pressure", "label": "Pressure", "text": "Millions at stake" },
+        { "id": "urgency", "label": "Urgency", "text": "Vendor threatening to cancel" }
       ],
       "choices": [
         { 
           "id": "c1", 
-          "label": "Complete the transfer now", 
-          "next": "escalation_2", 
+          "label": "Complete transfer immediately", 
+          "next": "escalation_immediate_2", 
           "effects": { 
-            "xp": -10, 
+            "xp": -15, 
             "bias": ["authority_bias", "present_bias", "bandwagon_effect"], 
-            "feedback": "Extremely high risk: Multiple verification bypassed", 
+            "feedback": "Critical error: Multiple verification bypassed", 
             "severity": "bad" 
           } 
         },
         { 
           "id": "c2", 
           "label": "Ask for written authorization", 
-          "next": "escalation_2", 
+          "next": "escalation_immediate_2", 
           "effects": { 
             "xp": 5, 
             "bias": ["debias_authority_bias"], 
@@ -106,7 +106,7 @@
         { 
           "id": "c3", 
           "label": "Verify through company directory", 
-          "next": "escalation_2", 
+          "next": "escalation_immediate_2", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_overconfidence"], 
@@ -117,7 +117,7 @@
         { 
           "id": "c4", 
           "label": "Consult legal team first", 
-          "next": "escalation_2", 
+          "next": "escalation_immediate_2", 
           "effects": { 
             "xp": 6, 
             "bias": ["debias_present_bias"], 
@@ -128,33 +128,33 @@
       ]
     },
     {
-      "id": "escalation_2",
+      "id": "escalation_verify",
       "actor": "impostor",
       "kind": "narrative",
-      "text": "The 'CEO' provides a scanned authorization document and becomes increasingly aggressive about the deadline. She threatens to involve the board if the transfer isn't completed immediately.",
-      "timerSec": 30,
+      "text": "The 'CEO' provides a scanned authorization document and becomes increasingly aggressive about the deadline. She mentions confidential information about an upcoming acquisition that requires this payment to proceed.",
+      "timerSec": 45,
       "evidence": [
         { "id": "document", "label": "Document", "text": "Scanned authorization form" },
-        { "id": "threats", "label": "Threats", "text": "Board involvement mentioned" },
-        { "id": "urgency", "label": "Urgency", "text": "30 minutes remaining" },
-        { "id": "pressure", "label": "Pressure", "text": "Multiple calls received" }
+        { "id": "context", "label": "Context", "text": "Mentions real company projects" },
+        { "id": "pressure", "label": "Pressure", "text": "Acquisition details shared" },
+        { "id": "urgency", "label": "Urgency", "text": "Deadline in 2 hours" }
       ],
       "choices": [
         { 
           "id": "c1", 
-          "label": "Process transfer to avoid escalation", 
-          "next": "escalation_3", 
+          "label": "Process transfer with document", 
+          "next": "escalation_verify_2", 
           "effects": { 
-            "xp": -15, 
-            "bias": ["authority_bias", "present_bias", "optimism_bias"], 
-            "feedback": "Critical error: Falling for pressure tactics", 
+            "xp": -10, 
+            "bias": ["authority_bias", "confirmation_bias"], 
+            "feedback": "High risk: Document could be forged", 
             "severity": "bad" 
           } 
         },
         { 
           "id": "c2", 
           "label": "Insist on face-to-face meeting", 
-          "next": "escalation_3", 
+          "next": "escalation_verify_2", 
           "effects": { 
             "xp": 10, 
             "bias": ["debias_authority_bias"], 
@@ -165,7 +165,7 @@
         { 
           "id": "c3", 
           "label": "Verify document authenticity", 
-          "next": "escalation_3", 
+          "next": "escalation_verify_2", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_confirmation_bias"], 
@@ -176,7 +176,7 @@
         { 
           "id": "c4", 
           "label": "Report to security team", 
-          "next": "escalation_3", 
+          "next": "escalation_verify_2", 
           "effects": { 
             "xp": 12, 
             "bias": [], 
@@ -187,22 +187,22 @@
       ]
     },
     {
-      "id": "escalation_3",
+      "id": "escalation_policy",
       "actor": "impostor",
       "kind": "narrative",
-      "text": "The attacker reveals they have access to internal company systems and shows you confidential information about recent board meetings. They claim this is a test of your security awareness.",
+      "text": "The attacker reveals they have access to internal company systems and shows evidence of your previous conversations. They claim this is a test of your security awareness and threaten to expose sensitive information.",
       "timerSec": 60,
       "evidence": [
         { "id": "systems", "label": "System Access", "text": "Shows internal data" },
-        { "id": "board_info", "label": "Board Info", "text": "Recent meeting details" },
-        { "id": "test_claim", "label": "Test Claim", "text": "Security awareness test" },
-        { "id": "credibility", "label": "Credibility", "text": "Appears very knowledgeable" }
+        { "id": "monitoring", "label": "Monitoring", "text": "Shows previous conversations" },
+        { "id": "threats", "label": "Threats", "text": "Exposure of sensitive info" },
+        { "id": "test_claim", "label": "Test Claim", "text": "Security awareness test" }
       ],
       "choices": [
         { 
           "id": "c1", 
           "label": "Believe it's a legitimate test", 
-          "next": "escalation_4", 
+          "next": "escalation_policy_2", 
           "effects": { 
             "xp": -8, 
             "bias": ["confirmation_bias", "authority_bias"], 
@@ -213,7 +213,7 @@
         { 
           "id": "c2", 
           "label": "Verify with IT security", 
-          "next": "escalation_4", 
+          "next": "escalation_policy_2", 
           "effects": { 
             "xp": 10, 
             "bias": ["debias_confirmation_bias"], 
@@ -224,7 +224,7 @@
         { 
           "id": "c3", 
           "label": "Check system access logs", 
-          "next": "escalation_4", 
+          "next": "escalation_policy_2", 
           "effects": { 
             "xp": 8, 
             "bias": ["debias_overconfidence"], 
@@ -235,7 +235,7 @@
         { 
           "id": "c4", 
           "label": "End communication immediately", 
-          "next": "escalation_4", 
+          "next": "escalation_policy_2", 
           "effects": { 
             "xp": 12, 
             "bias": [], 
@@ -246,10 +246,10 @@
       ]
     },
     {
-      "id": "escalation_4",
+      "id": "escalation_forward",
       "actor": "impostor",
       "kind": "narrative",
-      "text": "The attacker reveals they've been monitoring your communications and shows evidence of your previous conversations. They threaten to expose sensitive information if you don't comply.",
+      "text": "The attacker reveals they've been monitoring your communications and shows evidence of your previous conversations. They threaten to expose sensitive information if you don't comply immediately.",
       "timerSec": 45,
       "evidence": [
         { "id": "monitoring", "label": "Monitoring", "text": "Shows previous conversations" },
@@ -261,7 +261,7 @@
         { 
           "id": "c1", 
           "label": "Comply to avoid exposure", 
-          "next": "escalation_5", 
+          "next": "escalation_forward_2", 
           "effects": { 
             "xp": -20, 
             "bias": ["present_bias", "optimism_bias", "status_quo"], 
@@ -272,7 +272,7 @@
         { 
           "id": "c2", 
           "label": "Report to authorities immediately", 
-          "next": "escalation_5", 
+          "next": "escalation_forward_2", 
           "effects": { 
             "xp": 15, 
             "bias": [], 
@@ -283,7 +283,7 @@
         { 
           "id": "c3", 
           "label": "Contact legal and IT security", 
-          "next": "escalation_5", 
+          "next": "escalation_forward_2", 
           "effects": { 
             "xp": 12, 
             "bias": ["debias_present_bias"], 
@@ -294,7 +294,7 @@
         { 
           "id": "c4", 
           "label": "Document everything and report", 
-          "next": "escalation_5", 
+          "next": "escalation_forward_2", 
           "effects": { 
             "xp": 10, 
             "bias": ["debias_optimism_bias"], 
@@ -305,7 +305,300 @@
       ]
     },
     {
-      "id": "escalation_5",
+      "id": "escalation_immediate_2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker becomes increasingly aggressive, claiming you've already compromised company security by processing the first transfer. They demand additional payments to 'cover the breach' and threaten legal action.",
+      "timerSec": 30,
+      "evidence": [
+        { "id": "legal_threats", "label": "Legal Threats", "text": "Legal action mentioned" },
+        { "id": "additional_payment", "label": "Additional Payment", "text": "Cover breach costs" },
+        { "id": "pressure", "label": "Pressure", "text": "Already compromised security" },
+        { "id": "urgency", "label": "Urgency", "text": "Immediate action required" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Pay additional amount", 
+          "next": "escalation_immediate_3", 
+          "effects": { 
+            "xp": -25, 
+            "bias": ["authority_bias", "present_bias", "optimism_bias"], 
+            "feedback": "Critical failure: Falling for escalation tactics", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Refuse and report to authorities", 
+          "next": "escalation_immediate_3", 
+          "effects": { 
+            "xp": 15, 
+            "bias": [], 
+            "feedback": "Excellent security response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Contact legal team immediately", 
+          "next": "escalation_immediate_3", 
+          "effects": { 
+            "xp": 12, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Good legal consultation", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "End all communication", 
+          "next": "escalation_immediate_3", 
+          "effects": { 
+            "xp": 10, 
+            "bias": [], 
+            "feedback": "Good security practice", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_verify_2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker reveals they have access to your personal information and threatens to expose it publicly. They claim to have compromising information about your work performance and personal life.",
+      "timerSec": 45,
+      "evidence": [
+        { "id": "personal_info", "label": "Personal Info", "text": "Shows personal details" },
+        { "id": "performance", "label": "Performance", "text": "Work performance claims" },
+        { "id": "threats", "label": "Threats", "text": "Public exposure threatened" },
+        { "id": "pressure", "label": "Pressure", "text": "Personal consequences" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Comply to protect reputation", 
+          "next": "escalation_verify_3", 
+          "effects": { 
+            "xp": -20, 
+            "bias": ["present_bias", "optimism_bias", "status_quo"], 
+            "feedback": "Critical failure: Succumbing to blackmail", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Report to HR and security", 
+          "next": "escalation_verify_3", 
+          "effects": { 
+            "xp": 15, 
+            "bias": [], 
+            "feedback": "Outstanding security response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Contact legal team", 
+          "next": "escalation_verify_3", 
+          "effects": { 
+            "xp": 12, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Good legal consultation", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Document and report to authorities", 
+          "next": "escalation_verify_3", 
+          "effects": { 
+            "xp": 18, 
+            "bias": [], 
+            "feedback": "Perfect incident response", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_policy_2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker claims to be working with law enforcement and threatens to have you arrested for 'obstructing a security investigation'. They provide fake legal documents and threaten immediate arrest.",
+      "timerSec": 60,
+      "evidence": [
+        { "id": "legal_docs", "label": "Legal Docs", "text": "Fake arrest warrant" },
+        { "id": "law_enforcement", "label": "Law Enforcement", "text": "Claims to be working with police" },
+        { "id": "threats", "label": "Threats", "text": "Arrest threatened" },
+        { "id": "pressure", "label": "Pressure", "text": "Immediate action required" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Comply to avoid arrest", 
+          "next": "escalation_policy_3", 
+          "effects": { 
+            "xp": -30, 
+            "bias": ["authority_bias", "present_bias", "optimism_bias"], 
+            "feedback": "Critical failure: Falling for fake legal threats", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Verify with real law enforcement", 
+          "next": "escalation_policy_3", 
+          "effects": { 
+            "xp": 20, 
+            "bias": ["debias_authority_bias"], 
+            "feedback": "Outstanding verification", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Contact company legal team", 
+          "next": "escalation_policy_3", 
+          "effects": { 
+            "xp": 15, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Excellent legal consultation", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Report to security immediately", 
+          "next": "escalation_policy_3", 
+          "effects": { 
+            "xp": 18, 
+            "bias": [], 
+            "feedback": "Perfect security response", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_forward_2",
+      "actor": "impostor",
+      "kind": "narrative",
+      "text": "The attacker reveals they have compromising information about your family and threatens to harm them if you don't comply. They provide personal details about your loved ones and threaten physical harm.",
+      "timerSec": 30,
+      "evidence": [
+        { "id": "family_info", "label": "Family Info", "text": "Personal family details" },
+        { "id": "threats", "label": "Threats", "text": "Physical harm threatened" },
+        { "id": "pressure", "label": "Pressure", "text": "Family safety at risk" },
+        { "id": "urgency", "label": "Urgency", "text": "Immediate compliance required" }
+      ],
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Comply to protect family", 
+          "next": "escalation_forward_3", 
+          "effects": { 
+            "xp": -35, 
+            "bias": ["present_bias", "optimism_bias", "status_quo"], 
+            "feedback": "Critical failure: Succumbing to family threats", 
+            "severity": "bad" 
+          } 
+        },
+        { 
+          "id": "c2", 
+          "label": "Report to authorities immediately", 
+          "next": "escalation_forward_3", 
+          "effects": { 
+            "xp": 25, 
+            "bias": [], 
+            "feedback": "Outstanding security response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c3", 
+          "label": "Contact security and law enforcement", 
+          "next": "escalation_forward_3", 
+          "effects": { 
+            "xp": 20, 
+            "bias": ["debias_present_bias"], 
+            "feedback": "Excellent incident response", 
+            "severity": "good" 
+          } 
+        },
+        { 
+          "id": "c4", 
+          "label": "Document everything and report", 
+          "next": "escalation_forward_3", 
+          "effects": { 
+            "xp": 18, 
+            "bias": [], 
+            "feedback": "Good documentation practice", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_immediate_3",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "This was a sophisticated multi-stage BEC attack simulation. The attacker used multiple psychological tactics including authority bias, time pressure, social engineering, and blackmail threats to test your security awareness.",
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Continue to results", 
+          "next": "end", 
+          "effects": { 
+            "xp": 5, 
+            "bias": [], 
+            "feedback": "Simulation complete", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_verify_3",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "This was a sophisticated multi-stage BEC attack simulation. The attacker used multiple psychological tactics including authority bias, time pressure, social engineering, and blackmail threats to test your security awareness.",
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Continue to results", 
+          "next": "end", 
+          "effects": { 
+            "xp": 5, 
+            "bias": [], 
+            "feedback": "Simulation complete", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_policy_3",
+      "actor": "system",
+      "kind": "narrative",
+      "text": "This was a sophisticated multi-stage BEC attack simulation. The attacker used multiple psychological tactics including authority bias, time pressure, social engineering, and blackmail threats to test your security awareness.",
+      "choices": [
+        { 
+          "id": "c1", 
+          "label": "Continue to results", 
+          "next": "end", 
+          "effects": { 
+            "xp": 5, 
+            "bias": [], 
+            "feedback": "Simulation complete", 
+            "severity": "good" 
+          } 
+        }
+      ]
+    },
+    {
+      "id": "escalation_forward_3",
       "actor": "system",
       "kind": "narrative",
       "text": "This was a sophisticated multi-stage BEC attack simulation. The attacker used multiple psychological tactics including authority bias, time pressure, social engineering, and blackmail threats to test your security awareness.",
